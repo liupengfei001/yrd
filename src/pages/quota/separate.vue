@@ -3,17 +3,34 @@
 		<p class="title">什么是“现金分期”？</p>
 		<div class="content">
 			<img class="img" src="/static/images/branch.png" alt="" />
-			<p class="introduce">现金分期是指在您的提现额度内可根据个人需求办理小额现金信贷，并按月分期还款。宜享花会邀请使用并还款记录良好的客户体验现金分期功能。</p>
+			<p class="introduce">现金分期是指在您的提现额度内可根据个人需求办理小额提现并按月分期还款。宜享花会邀请使用并还款记录良好的客户体验现金分期功能。</p>
 		</div>
 	</div>
 </template>
 
 <script>
 	export default {
-    	name: "Fail",
+    	name: "Separate",
     	data () {
       		return {
       		}
+    	},
+    	created(){
+		    let params={
+		    	open_id:localStorage.open_id,
+		    	aa:123
+		    }			
+		    var headers=Header(params,222332)
+		    this.$http.get("http://10.106.158.124:8080/crm/test/tsha1",{
+	      		params:params,
+	      		headers:headers
+	      	}).then(response => {
+	      		//var res=response.data.data;
+	      		console.log(response)
+	      		
+	       	},response => {
+	        	console.log("ajax error");
+	      	});
     	}
     }
 </script>

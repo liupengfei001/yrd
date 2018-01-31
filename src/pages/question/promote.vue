@@ -10,7 +10,7 @@
 
 <script>
 	export default {
-    	name: "Fail",
+    	name: "Promote",
     	data () {
       		return {
       		}

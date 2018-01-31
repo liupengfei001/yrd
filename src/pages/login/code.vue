@@ -9,7 +9,7 @@
 				<img class="phone" src="/static/images/phone.png"/>
 				<span>验证码</span>
 			</span>
-			<input type="number" placeholder="请输入短信验证码" v-on:input ="inputFunc" v-model="code"/>
+			<input type="number" placeholder="请输入短信验证码" v-on:input ="inputFunc" v-model="code" onkeypress="return event.keyCode>=48&&event.keyCode<=57" ng-pattern="/[^a-zA-Z]/"/>
 			<span v-show="show" class="reset" @click="getCode">重新获取</span>
 			<span v-show="!show" class="count">{{count}}s后重发</span>
 		</div>
@@ -43,7 +43,8 @@
       			show: true,
 			   	count: '',
 			   	timer: null,
-			   	btseen:true
+			   	btseen:true,
+			   	login:""
       		}
     	},
     	created(){
@@ -51,6 +52,10 @@
     			this.phoneNum=localStorage.login
     		}catch(e){
     			//TODO handle the exception
+    		}
+    		var path=this.$route.query;
+    		if(path.login){
+    			this.login=true
     		}
     	},
     	mounted(){
@@ -96,7 +101,7 @@
 		        }
 		    },
 		    handleClickLogin(){
-		    	Indicator.open();
+	    		Indicator.open();
     			this.$http.get(this.$store.state.link+'/register',{
 					params:{
 						wechat_id:localStorage.wechat_id,
@@ -112,6 +117,7 @@
     					try{
 			    			window.localStorage.open_id=open_id;
 			    			window.localStorage.mobile=mobile;
+			    			window.localStorage.bindCard=""
 			    		}catch(e){
 			    			//TODO handle the exception
 			    		}
@@ -195,7 +201,7 @@
 	}
 	.inputRow input{
 		width: 3.4rem;
-		line-height: 1rem;
+		height: 100%;
 		border:none;
 		font-size:.28rem;
 		color:#333333;

@@ -20,15 +20,32 @@
                 return false;
             }
         }
-//				if (!is_weixin()) {
-//          window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxdf3f22ebfe96b912&redirect_uri=xxx&response_type=code&scope=snsapi_base&state=hyxt#wechat_redirect';
-//      }
+				if (!is_weixin()) {
+            window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxdf3f22ebfe96b912&redirect_uri=xxx&response_type=code&scope=snsapi_base&state=hyxt#wechat_redirect';
+        }
+				function onBridgeReady() {
+            WeixinJSBridge.call('hideOptionMenu');
+        }
+        if (typeof WeixinJSBridge == "undefined") {
+            if (document.addEventListener) {
+                document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+            } else if (document.attachEvent) {
+                document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+                document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+            }
+        } else {
+            onBridgeReady();
+        }
     </script>
+    <script type="text/javascript" src="/static/js/hash.js"></script>
+    <script type="text/javascript" src="/static/js/uuid.js"></script>
+    <script type="text/javascript" src="/static/js/sort.js"></script>
     <script type='text/javascript'>
       var _vds = _vds || [];
       window._vds = _vds;
       (function(){
         _vds.push(['setAccountId', 'bc38afc7a35440e6']);
+        _vds.push(['enableHT', true]);
         (function() {
           var vds = document.createElement('script');
           vds.type='text/javascript';

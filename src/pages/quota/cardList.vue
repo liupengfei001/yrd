@@ -1,8 +1,7 @@
 <template>
 	<div class="background">
 		<ul class="form">
-			<li>
-				<img class="img" src="/static/images/m.png"/>
+			<li @click="handleClickChoose">
 				{{bankname}}
 			</li>
 		</ul>
@@ -25,14 +24,16 @@
       			bankname:''
       		}
     	},
-    	components:{
-    	},
     	created() {
     		var data={
-    			openid:localStorage.open_id
+    			openid:localStorage.open_id,
+    			wechat_id:localStorage.wechat_id
     		}
-			this.$http.post(this.$store.state.link+'/repay/cardlist', Qs.stringify(data)
-			).then(response => {
+    		var headers=Header(data,localStorage.open_id)
+			this.$http.post(this.$store.state.link+'/repay/cardlist', Qs.stringify(data),{
+				headers:headers
+    		}).then(response => {
+    			console.log(response.data)
 				var res=response.data.data[0];
 				this.bankName=res.bankName;
 				this.cardNo=res.cardNo;
@@ -45,6 +46,9 @@
     	methods:{
 			handleClick(){
 				//this.$router.push("/card?choose=2")
+			},
+			handleClickChoose(){
+				this.$router.go(-1)
 			}
     	}
     }
@@ -70,7 +74,7 @@
 		font-size:.32rem;
 		color:#333333;
 		letter-spacing:0;
-		text-align:left;
+		text-align:center;
 	}
 	.img{
 		width: .52rem;

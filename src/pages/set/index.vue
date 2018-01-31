@@ -14,23 +14,44 @@
     	name: "set",
     	data () {
       		return {
-      			txt:""
+      			txt:"",
+      			num:''
       		}
     	},
     	created(){
-    		var data={
-				vCardNo:localStorage.vCardNo
+    		var path=this.$route.query;
+    		if(path.webank_num!=undefined){
+    			var vCardNo=path.webank_num
+    			try{
+	      			window.localStorage.vCardNo=webank_num
+	      		}catch(e){
+	      			//TODO handle the exception
+	      		}
     		}
-    		this.$http.post(this.$store.state.link+'/repay/acct', Qs.stringify(data)
-			).then(response => {
-				var res=response.data.data;
+    		var data={
+				vCardNo:localStorage.vCardNo,
+				wechat_id:localStorage.wechat_id
+    		}
+    		var headers=Header(data,localStorage.open_id)
+    		this.$http.post(this.$store.state.link+'/repay/currentRepayType', Qs.stringify(data),{
+				headers:headers
+    		}).then(response => {
+    			console.log(response.data)
+				this.num=response.data.data;
+				if(this.num==0){
+					this.txt="自动划扣 –全额"
+				}else if(this.num==1){
+					this.txt="自动划扣 - 最低还款额"
+				}else{
+					this.txt="手动还款"
+				}
 	        },response => {
 	        	console.log("ajax error");
 	      	});
     	},
     	methods:{
     		handleClick(){
-    			this.$router.push("/way")
+    			this.$router.push("/way?num="+this.num)
     		}
     	}
     }

@@ -111,13 +111,17 @@
     		},
     		handleClickNext(){
     			Indicator.open()
+    			var params={
+	    			wechat_id:localStorage.wechat_id,
+					open_id:this.open_id
+	    		}
+	    		var headers=Header(params,localStorage.open_id)
     			this.$http.get(this.$store.state.link+'/poll/get/webanknum',{
-		      		params:{
-						wechat_id:localStorage.wechat_id,
-						open_id:this.open_id
-					}
+		      		params:params,
+		      		headers:headers
 		      	}).then(response => {
 		      		Indicator.close();
+		      		console.log(response.data)
 		      		var ret=response.data.retCode;
 		      		if(ret==0){
 		      			var card_num=response.data.data.webank_num

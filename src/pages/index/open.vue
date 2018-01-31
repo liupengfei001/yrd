@@ -11,7 +11,7 @@
 		<div class="list">
 			<p class="card" @click="handleClick">账户信息<img class="gt" src="/static/images/gt.png"/></p>
 			<p class="describe" v-if="!seen">您尚未绑卡！点击账户信息，长按复制卡号去微信钱包绑卡</p>
-			<p @click="handleClickRepement">我的账单<img class="gt" src="/static/images/gt.png"/></p>
+			<p v-if="seenList" @click="handleClickRepement">我的账单<img class="gt" src="/static/images/gt.png"/></p>
 			<p @click="handleClickSeparate">现金分期<img class="gt" src="/static/images/gt.png"/></p>
 			<p @click="handleClickQuestion">常见问题<img class="gt" src="/static/images/gt.png"/></p>
 		</div>
@@ -41,7 +41,8 @@
       			cardNum:'',
       			seen:true,
       			open_id:'',
-      			cashLimit:''
+      			cashLimit:'',
+      			seenList:''
       		}
     	},
     	beforeCreate() {
@@ -50,17 +51,26 @@
     		}catch(e){
     			//TODO handle the exception
     		}
+    		var params={
+    			wechat_id:localStorage.wechat_id,
+				open_id:this.open_id
+    		}
+    		var headers=Header(params,localStorage.open_id)
     		this.$http.get(this.$store.state.link+'/wecard/limit',{
-	      		params:{
-					wechat_id:localStorage.wechat_id,
-					open_id:this.open_id
-				}
-	      	}).then(response => {
+	      		params:params,
+	      		headers:headers
+	     	}).then(response => {
 	      		if(response.data.retCode==0){
 	      			console.log(response.data)
 	      			this.quota=response.data.data.creditLimit
 	      			this.money=response.data.data.availableLimit
 	      			this.cashLimit=response.data.data.cashLimit
+	      			var webank_status=response.data.data.webank_status
+	      			if(webank_status=="S"){
+	      				this.seenList=true
+	      			}else{
+	      				this.seenList=""
+	      			}
 	      		}else{
 	      			MessageBox('提示',response.data.msg);
 	      		}
@@ -79,7 +89,6 @@
 	      			}else{
 	      				this.seen=false
 	      			}
-	      			
 	      		}
 	        },response => {
 	        	console.log("ajax error");

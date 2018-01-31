@@ -25,7 +25,7 @@
 			</p>
 			<p class="option top">
 				<span class="left">还款方式</span>
-				<span class="right">自动划扣 (每月到期还款日全额扣款)</span>
+				<span class="right">{{txt}}</span>
 			</p>
 			<p class="option">
 				<span class="left">默认银行卡</span>
@@ -51,15 +51,19 @@
       			seen:false,
       			cardNo:'',
       			bankName:'',
-      			branch:''
+      			branch:'',
+      			txt:""
       		}
     	},
     	created(){
+    		var params={
+    			wechat_id:localStorage.wechat_id,
+				open_id: localStorage.open_id
+    		}
+    		var headers=Header(params,localStorage.open_id)
 			this.$http.get(this.$store.state.link+'/wecard/info',{
-	      		params:{
-					wechat_id:localStorage.wechat_id,
-					open_id: localStorage.open_id
-				}
+	      		params:params,
+				headers:headers
 	      	}).then(response => {
 	      		var res=response.data.data;
 	      		console.log(res)
@@ -67,7 +71,6 @@
 	      		this.cardLimit=res.cardLimit
 	      		this.cashLimit=res.cashLimit
 	      		this.repayDate=res.repayDate
-	      		console.log(this.repayDate)
 	      		if(this.repayDate==null){
 	      			this.seen=false
 	      		}else{
@@ -87,17 +90,39 @@
 	       	},response => {
 	        	console.log("ajax error");
 	      	});
-	      	var data={
-    			openid:localStorage.open_id
+	      	var Data={
+    			openid:localStorage.open_id,
+    			wechat_id:localStorage.wechat_id
     		}
-	      	
-    		this.$http.post(this.$store.state.link+'/repay/maincard', Qs.stringify(data)
-			).then(response => {
+	      	var headers=Header(Data,localStorage.open_id)
+    		this.$http.post(this.$store.state.link+'/repay/maincard',Qs.stringify(Data),{
+    			headers:headers
+			}).then(response => {
 				var res=response.data.data;
 				this.bankName=res.bankName;
 				this.cardNo=res.cardNo;
 				var str=this.cardNo.substr(this.cardNo.length-4)
 				this.branch=this.bankName+" ("+str+")"
+	        },response => {
+	        	console.log("ajax error");
+	      	});
+	      	
+	      	var data={
+				vCardNo:localStorage.vCardNo,
+				wechat_id:localStorage.wechat_id
+    		}
+    		var headers=Header(data,localStorage.open_id)
+    		this.$http.post(this.$store.state.link+'/repay/currentRepayType', Qs.stringify(data),{
+    			headers:headers
+    		}).then(response => {
+				var res=response.data.data;
+				if(res==0){
+					this.txt="自动划扣 –全额"
+				}else if(res==1){
+					this.txt="自动划扣 - 最低还款额"
+				}else{
+					this.txt="手动还款"
+				}
 	        },response => {
 	        	console.log("ajax error");
 	      	});

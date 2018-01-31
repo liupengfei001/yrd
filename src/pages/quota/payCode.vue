@@ -6,7 +6,7 @@
 				<img class="phone" src="/static/images/phone.png"/>
 				<span>验证码</span>
 			</span>
-			<input type="number" placeholder="请输入短信验证码" v-on:input ="inputFunc" v-model="code"/>
+			<input type="number" placeholder="请输入短信验证码" v-on:input ="inputFunc" v-model="code" onkeypress="return event.keyCode>=48&&event.keyCode<=57" ng-pattern="/[^a-zA-Z]/"/>
 			<span v-show="show" class="reset" @click="getCode">重新获取</span>
 			<span v-show="!show" class="count">{{count}}s后重发</span>
 		</div>
@@ -61,11 +61,13 @@
     			var data={
 	    			cardNo:this.cardNo,
 	    			vCardNo:localStorage.vCardNo,
-	    			txnAmt:this.money
+	    			txnAmt:this.money,
+	    			wechat_id:localStorage.wechat_id
 	    		}
-    			console.log(data)
-	    		this.$http.post(this.$store.state.link+'/repay/sendSms', Qs.stringify(data)
-				).then(response => {
+    			var headers=Header(data,localStorage.open_id)
+	    		this.$http.post(this.$store.state.link+'/repay/sendSms', Qs.stringify(data),{
+					headers:headers
+    			}).then(response => {
 					var res=response.data.data;
 					this.serial=res
 					console.log(this.serial)
@@ -97,10 +99,13 @@
 	    			vCardNo:localStorage.vCardNo,
 	    			txnAmt:this.money,
 	    			smsCode:this.code,
-	    			serial:this.serial
+	    			serial:this.serial,
+	    			wechat_id:localStorage.wechat_id
 	    		}
-	    		this.$http.post(this.$store.state.link+'/repay/quickPay', Qs.stringify(data)
-				).then(response => {
+		    	var headers=Header(data,localStorage.open_id)
+	    		this.$http.post(this.$store.state.link+'/repay/quickPay', Qs.stringify(data),{
+					headers:headers
+		    	}).then(response => {
 					var res=response.data.retCode;
 					if(res!=444){
 						this.$router.push("/payState?success=true")

@@ -21,12 +21,12 @@
 			<p class="second">实名手机号</p>
 			<div class="inputRow">
 				<label>手机号</label>
-				<input type="number" placeholder="请输入本人实名认证手机号" v-if="codeseen" v-on:input ="inputFunc" v-model="phoneNum"/>
+				<input type="number" placeholder="请输入本人实名认证手机号" v-if="codeseen" v-on:input ="inputFunc" v-model="phoneNum" onkeypress="return event.keyCode>=48&&event.keyCode<=57" ng-pattern="/[^a-zA-Z]/"/>
 				<input type="text" readonly="readonly" v-if="!codeseen" v-model="phoneNum"/>
 			</div>
 			<div class="inputRow" v-if="codeseen">
 				<label>验证码</label>
-				<input type="number" id="code" placeholder="请输入短信验证码" v-model="code"/>
+				<input type="number" id="code" placeholder="请输入短信验证码" v-model="code" onkeypress="return event.keyCode>=48&&event.keyCode<=57" ng-pattern="/[^a-zA-Z]/"/>
 				<span v-if="show" class="reset" @click="getCode">{{reset}}</span>
 				<span v-if="!show" class="count">{{count}}s后重发</span>
 			</div>
@@ -113,8 +113,10 @@
     				MessageBox('','手机号格式不正确，请输入正确格式的手机号');
     			}else{
     				Indicator.open();
+    				var headers=Header(this.params,localStorage.open_id)
     				this.$http.get(this.$store.state.link+'/valid/idcard',{
-    					params:this.params
+    					params:this.params,
+    					headers:headers
     				}).then(response => {
     					console.log(response.data.data)
     					Indicator.close();
@@ -181,12 +183,23 @@
 		    },
 			handleClickUnload(){
 				if(this.seen==true){
-					try{
-		    			var openid=localStorage.open_id
-		    		}catch(e){
-		    			//TODO handle the exception
+		    		var params={
+		    			open_id:localStorage.open_id
 		    		}
-					window.location.href=this.$store.state.link+"/ocr?open_id="+openid
+		    		var headers=Header(params,localStorage.open_id)
+    				this.$http.get(this.$store.state.link+"/ocr",{
+    					params:params,
+    					headers:headers
+    				}).then(response => {
+    					var res=response.data
+    					if(res.retCode==0){
+    						window.location.href=res.data
+    					}else{
+    						MessageBox('提示',res.msg);
+    					}
+			      	},response => {
+			        	console.log("ajax error");
+			      	});
 				}
 			}
     	}

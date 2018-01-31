@@ -35,22 +35,22 @@
     			this.params={
     				wechat_id:localStorage.wechat_id,
 					open_id: localStorage.open_id,
-					webank_num :localStorage.vCardNo,
 					type:3,
 					next:this.next
     			}
     		}else{
     			this.params={
-    				wechat_id:localStorage.wechat_id,
-					open_id: localStorage.open_id,
-					webank_num :localStorage.vCardNo,
-					type:1,
-					stmt_no : this.lastStmtNo,
-					next:this.next
+    				next:this.next,
+    				open_id: localStorage.open_id,
+    				stmt_no : this.lastStmtNo,
+    				type:1,
+    				wechat_id:localStorage.wechat_id
     			}
     		}
+    		var headers=Header(this.params,localStorage.open_id)
     		this.$http.get(this.$store.state.link+'/wecard/detail',{
-	      		params:this.params
+	      		params:this.params,
+	      		headers:headers
 	      	}).then(response => {
 	      		var res=response.data.data.list;
 	      		console.log(response.data.data)

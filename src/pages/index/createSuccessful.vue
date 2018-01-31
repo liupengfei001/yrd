@@ -48,14 +48,16 @@
       		}
     	},
     	created(){
+    		var params={
+    			wechat_id:localStorage.wechat_id,
+				open_id:localStorage.open_id
+    		}
+    		var headers=Header(params,localStorage.open_id)
 			this.$http.get(this.$store.state.link+'/poll/get/webanknum',{
-	      		params:{
-					wechat_id:localStorage.wechat_id,
-					open_id:localStorage.open_id
-				}
+	      		params:params,
+	      		headers:headers
 	     	}).then(response => {
 	      		var res=response.data.data;
-	      		console.log(res)
 	      		this.cardLimit=res.cardLimit;
 	      		this.cashLimit=res.cashLimit;
 	      		this.name=res.userName;

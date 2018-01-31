@@ -16,11 +16,11 @@
 				</li>
 				<li class="list border_right" @click="handleClickrepay">
 					<img class="list3" src="/static/images/list3.png"/>
-					<span class="introduce">还款相关</span>
+					<span class="introduce margin">还款相关</span>
 				</li>
 				<li class="list" @click="handleClickother">
 					<img class="list4" src="/static/images/list4.png"/>
-					<span class="introduce">其他问题</span>
+					<span class="introduce left">其他问题</span>
 				</li>
 			</ul>
 		</div>
@@ -170,6 +170,12 @@
 		color:#525252;
 		letter-spacing:0;
 	}
+	.left{
+		margin-left: .22rem;
+	}
+	.margin{
+		margin-left: .2rem;
+	}	
 	.bottom{
 		width: 100%;
 		margin-top: .3rem;

@@ -14,8 +14,8 @@
 				</div>
 				<div class="dateList" v-if="!one">
 					<p>每月到期扣款日 <span class="date">每月{{data6}}日</span></p>
-					<p>每期还款金额为 <span class="repayment">{{money6}}元</span></p>
-					<p>第一期还款金额为<span class="first">{{money6}}元</span></p>
+					<p>每期还款金额为 <span class="repayment">{{money6_2}}元</span></p>
+					<p>(第一期还款金额为<span class="first">{{money6}}元)</span></p>
 				</div>
 			</div>
 			<div class="list" @click="handleclickRadio2">
@@ -27,8 +27,8 @@
 				
 				<div class="dateList" v-if="!two">
 					<p>每月到期扣款日 <span class="date">每月{{data9}}日</span></p>
-					<p>每期还款金额为 <span class="repayment">{{money9}}元</span></p>
-					<p>第一期还款金额为<span class="first">{{money9}}元</span></p>
+					<p>每期还款金额为 <span class="repayment">{{money9_2}}元</span></p>
+					<p>(第一期还款金额为<span class="first">{{money9}}元)</span></p>
 				</div>
 			</div>
 			<div class="list" @click="handleclickRadio3">
@@ -39,8 +39,8 @@
 				</div>
 				<div class="dateList" v-if="!three">
 					<p>每月到期扣款日 <span class="date">每月{{data12}}日</span></p>
-					<p>每期还款金额为 <span class="repayment">{{money12}}元</span></p>
-					<p>第一期还款金额为<span class="first">{{money12}}元</span></p>
+					<p>每期还款金额为 <span class="repayment">{{money12_2}}元</span></p>
+					<p>(第一期还款金额为<span class="first">{{money12}}元)</span></p>
 				</div>
 			</div>
 		</div>
@@ -52,7 +52,7 @@
 	import { MessageBox } from 'mint-ui';
 	import Qs from 'qs'
 	export default {
-    	name: "Index",
+    	name: "Branch",
     	data () {
       		return {
       			one:true,
@@ -69,16 +69,22 @@
       			data9:'',
       			data12:'',
       			money6:'',
+      			money6_2:"",
+      			money9_2:"",
+      			money12_2:"",
       			money9:'',
       			money12:''
       		}
     	},
     	created() {
     		var data={
-    			vCardNo:localStorage.vCardNo
+    			vCardNo:localStorage.vCardNo,
+    			wechat_id:localStorage.wechat_id
     		}
-    		this.$http.post(this.$store.state.link+'/repay/acct', Qs.stringify(data)
-			).then(response => {
+    		var headers=Header(data,localStorage.open_id)
+    		this.$http.post(this.$store.state.link+'/repay/acct', Qs.stringify(data),{
+    			headers:headers
+			}).then(response => {
 				var res=response.data.data;
 				this.withdrawAmt=res.stmtBal
 				this.stmtMinBal=res.stmtMinBal
@@ -99,42 +105,55 @@
     			var Data={
 	    			vCardNo:localStorage.vCardNo,
 	    			loanTerm:'12',
-	    			withdrawAmt:this.withdrawAmt
+	    			withdrawAmt:this.withdrawAmt,
+	    			wechat_id:localStorage.wechat_id
 	    		}
-	    		this.$http.post(this.$store.state.link+'/repay/loanSetup', Qs.stringify(Data)
-				).then(response => {
-					console.log(response.data.data)
+    			var headers=Header(Data,localStorage.open_id)
+	    		this.$http.post(this.$store.state.link+'/repay/loanSetup', Qs.stringify(Data),{
+					headers:headers
+    			}).then(response => {
+					//console.log(response.data)
 					var res=response.data.data.loanItem.termList[0];
+					var res2=response.data.data.loanItem.termList[1];
 					this.data12=res.pmtDueDate.substr(res.pmtDueDate.length-2)
 					this.money12=res.schdAmt
+					this.money12_2=res2.schdAmt
 		        },response => {
 		        	console.log("ajax error");
 		      	});
 		      	var Data={
 	    			vCardNo:localStorage.vCardNo,
 	    			loanTerm:'9',
-	    			withdrawAmt:this.withdrawAmt
+	    			withdrawAmt:this.withdrawAmt,
+	    			wechat_id:localStorage.wechat_id
 	    		}
-	    		this.$http.post(this.$store.state.link+'/repay/loanSetup', Qs.stringify(Data)
-				).then(response => {
-					console.log(response.data.data)
+		      	var headers=Header(Data,localStorage.open_id)
+	    		this.$http.post(this.$store.state.link+'/repay/loanSetup', Qs.stringify(Data),{
+					headers:headers
+    			}).then(response => {
 					var res=response.data.data.loanItem.termList[0];
+					var res2=response.data.data.loanItem.termList[1];
 					this.data9=res.pmtDueDate.substr(res.pmtDueDate.length-2)
 					this.money9=res.schdAmt
+					this.money9_2=res2.schdAmt
 		        },response => {
 		        	console.log("ajax error");
 		      	});
 		      	var Data={
 	    			vCardNo:localStorage.vCardNo,
 	    			loanTerm:'6',
-	    			withdrawAmt:this.withdrawAmt
+	    			withdrawAmt:this.withdrawAmt,
+	    			wechat_id:localStorage.wechat_id
 	    		}
-	    		this.$http.post(this.$store.state.link+'/repay/loanSetup', Qs.stringify(Data)
-				).then(response => {
-					console.log(response.data.data)
+		      	var headers=Header(Data,localStorage.open_id)
+	    		this.$http.post(this.$store.state.link+'/repay/loanSetup', Qs.stringify(Data),{
+					headers:headers
+    			}).then(response => {
 					var res=response.data.data.loanItem.termList[0];
+					var res2=response.data.data.loanItem.termList[1];
 					this.data6=res.pmtDueDate.substr(res.pmtDueDate.length-2)
 					this.money6=res.schdAmt
+					this.money6_2=res2.schdAmt
 		        },response => {
 		        	console.log("ajax error");
 		      	});
@@ -166,10 +185,13 @@
     			}
     			var data={
 	    			vCardNo:localStorage.vCardNo,
-	    			loanTerm:this.loanTerm
+	    			loanTerm:this.loanTerm,
+	    			wechat_id:localStorage.wechat_id
 	    		}
-	    		this.$http.post(this.$store.state.link+'/repay/stmtloan', Qs.stringify(data)
-				).then(response => {
+		      	var headers=Header(data,localStorage.open_id)
+	    		this.$http.post(this.$store.state.link+'/repay/stmtloan', Qs.stringify(data),{
+					headers:headers
+    			}).then(response => {
 					var res=response.data.retCode;
 					if(res==0){
 						this.$router.push("/branchFail?succes=true")
@@ -265,8 +287,7 @@
 		font-size:.28rem;
 		color:#525252;
 		letter-spacing:0;
-		float: right;
-		margin-right: .62rem;
+		margin-left: .18rem;
 	}
 	.btn{
 		display: block;

@@ -4,7 +4,7 @@
 		<div class="form">
 			<div class="inputRow">
 				<label>卡号</label>
-				<input type="number" placeholder="请输入您本人借记卡号" v-model="cardNum"/>
+				<input type="number" placeholder="请输入您本人借记卡号" v-model="cardNum" onkeypress="return event.keyCode>=48&&event.keyCode<=57" ng-pattern="/[^a-zA-Z]/"/>
 			</div>
 			<div class="inputRow" @click="handleClickChoose">
 				<label>开户银行</label>
@@ -12,11 +12,11 @@
 			</div>
 			<div class="inputRow">
 				<label>预留手机号</label>
-				<input type="number" placeholder="请输入此卡开户时预留手机号" v-model="phoneNum"/>
+				<input type="number" placeholder="请输入此卡开户时预留手机号" v-model="phoneNum" onkeypress="return event.keyCode>=48&&event.keyCode<=57" ng-pattern="/[^a-zA-Z]/"/>
 			</div>
 			<div class="inputRow" v-if="mobileNum">
 				<label>验证码</label>
-				<input type="number" id="code" v-on:input ="inputFunc"  placeholder="请输入短信验证码" v-model="code"/>
+				<input type="number" id="code" v-on:input ="inputFunc"  placeholder="请输入短信验证码" v-model="code" onkeypress="return event.keyCode>=48&&event.keyCode<=57" ng-pattern="/[^a-zA-Z]/"/>
 				<span v-if="show" class="reset" @click="getCode">{{reset}}</span>
 				<span v-if="!show" class="count">{{count}}s后重发</span>
 			</div>
@@ -96,16 +96,20 @@
     				}catch(e){
     					//TODO handle the exception
     				}
+    				
     				Indicator.open();
+    				var params={
+    					wechat_id:localStorage.wechat_id,
+    					open_id:this.open_id,
+    					bank_card_num:this.cardNum,
+    					phone_num:this.phoneNum,	
+    					bank_id:this.cardId,
+    					vfcode:this.code
+    				}
+    				var headers=Header(params,localStorage.open_id)
     				this.$http.get(this.$store.state.link+"/acct/bindcard",{
-    					params:{
-	    					wechat_id:localStorage.wechat_id,
-	    					open_id:this.open_id,
-	    					bank_card_num:this.cardNum,
-	    					phone_num:this.phoneNum,	
-	    					bank_id:this.cardId,
-	    					vfcode:this.code
-	    				}
+    					params:params,
+	    				headers:headers
     				}).then(response =>  {
 						Indicator.close();
 						console.log(response.data)

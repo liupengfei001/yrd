@@ -59,7 +59,7 @@
 	import CommentDelay from "./com/delay.vue"
 	import CommentNotDelay from "./com/notDelay.vue"
 	export default {
-    	name: "Index",
+    	name: "Quota",
     	data () {
       		return {
       			active:true,
@@ -81,16 +81,42 @@
       			nextStmtDate:'',
       			currentDate:"",
       			lastStmtNo:''
-      			
-      			
       		}
     	},
     	created() {
+    		var path=this.$route.query;
+    		if(path.wechat_id!=undefined){
+    			var wechat=path.wechat_id
+    			try{
+    				window.localStorage.wechat_id=wechat;
+    			}catch(e){
+    				//TODO handle the exception
+    			}
+    		}
+    		if(path.open_id!=undefined){
+    			var open_id=path.open_id
+    			try{
+    				window.localStorage.open_id=open_id;
+    			}catch(e){
+    				//TODO handle the exception
+    			}
+    		}
+    		if(path.webank_num!=undefined){
+    			var vCardNo=path.webank_num
+    			try{
+	      			window.localStorage.vCardNo=webank_num
+	      		}catch(e){
+	      			//TODO handle the exception
+	      		}
+    		}
+    		var params={
+    			open_id:localStorage.open_id,
+				wechat_id:localStorage.wechat_id
+    		}
+    		var headers=Header(params,localStorage.open_id)
     		this.$http.get(this.$store.state.link+'/wecard/bill',{
-      			params:{
-					open_id:localStorage.open_id,
-					wechat_id:localStorage.wechat_id
-				}
+      			params:params,
+      			headers:headers
 	      	}).then(response => {
 	      		var bill=response.data.data.bill;
 	      		var unsetBill=response.data.data.unsetBill
@@ -206,7 +232,11 @@
     			}
     		},
     		handleClickBranch(){
-    			this.$router.push("/branch?num="+this.stmtBal)
+    			if(this.stmtBal>500){
+    				this.$router.push("/branch?num="+this.stmtBal)
+    			}else{
+    				MessageBox('提示','您本期账单的剩余待还金额未达到账单分期最低标准，无法办理账单分期');
+    			}
     		}
     	}
     }

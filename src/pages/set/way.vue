@@ -27,6 +27,8 @@
 </template>
 
 <script>
+	import { MessageBox } from 'mint-ui';
+	import { Indicator } from 'mint-ui';
 	import Qs from 'qs'
 	export default {
     	name: "way",
@@ -34,35 +36,67 @@
       		return {
       			one:false,
       			two:true,
-      			three:true
+      			three:true,
+      			num:""
       		}
+    	},
+    	created(){
+    		var path=this.$route.query;
+    		if(this.$route.query.num==0){
+    			this.one=false
+    			this.two=true
+    			this.three=true
+    		}else if(this.$route.query.num==1){
+    			this.one=true
+    			this.two=false
+    			this.three=true
+    		}else{
+    			this.one=true
+    			this.two=true
+    			this.three=false
+    		}
     	},
     	methods:{
     		handleclickRadio1(){
+    			this.num=0
     			this.one=false
     			this.two=true
     			this.three=true
     		},
     		handleclickRadio2(){
+    			this.num=1
     			this.one=true
     			this.two=false
     			this.three=true
     		},
     		handleclickRadio3(){
+    			this.num=2
     			this.one=true
     			this.two=true
     			this.three=false
     		},
     		handleClick(){
+    			Indicator.open();
     			var data={
-    				vCardNo:localStorage.vCardNo
+    				vCardNo:localStorage.vCardNo,
+    				ddInd:this.num,
+    				wechat_id:localStorage.wechat_id
 	    		}
-	    		this.$http.post(this.$store.state.link+'/repay/acct', Qs.stringify(data)
-				).then(response => {
-					var res=response.data.data;
-					
-					this.$router.push("/set")
+    			var headers=Header(data,localStorage.open_id)
+	    		this.$http.post(this.$store.state.link+'/repay/changeloan', Qs.stringify(data),{
+					headers:headers
+    			}).then(response => {
+					Indicator.close();
+					console.log(response.data)
+					var res=response.data.retCode;
+					console.log(res)
+					if(res==0){
+						this.$router.push("/set")
+					}else{
+						MessageBox('提示','设置失败，请稍后重试');
+					}
 		        },response => {
+		        	Indicator.close();
 		        	console.log("ajax error");
 		      	});
     		}

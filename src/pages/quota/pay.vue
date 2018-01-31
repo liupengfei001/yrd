@@ -33,12 +33,14 @@
     			this.money=path.num
     		}
     		var data={
-    			openid:localStorage.open_id
+    			openid:localStorage.open_id,
+    			wechat_id:localStorage.wechat_id
     		}
-    		this.$http.post(this.$store.state.link+'/repay/maincard', Qs.stringify(data)
-			).then(response => {
+    		var headers=Header(data,localStorage.open_id)
+    		this.$http.post(this.$store.state.link+'/repay/maincard', Qs.stringify(data),{
+				headers:headers
+    		}).then(response => {
 				var res=response.data.data;
-				console.log(res)
 				this.bankName=res.bankName;
 				this.cardNo=res.cardNo;
 				this.mobile=res.mobile;

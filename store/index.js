@@ -14,7 +14,7 @@ export default new Vuex.Store({
         "authen_mobile":"",
         "link":'http://yixianghua-crm.yixinonline.com:8080/crm',
         //"link":'https://yixianghuacrm.yirendai.com/crm',
-        //"link":'http://10.106.157.149:8080/crm'
+        //"link":'http://10.106.158.124:8080/crm'
         //"link":'http://10.106.158.124:8011/crm'   
         
     },

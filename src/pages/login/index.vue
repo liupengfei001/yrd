@@ -9,7 +9,7 @@
 				<img class="phone" src="/static/images/phone.png"/>
 				<span>手机号</span>
 			</span>
-			<input type="number" placeholder="请输入宜人贷注册手机号" v-on:input ="inputFunc" v-model="phoneNum"/>
+			<input type="number" placeholder="请输入宜人贷注册手机号" v-on:input ="inputFunc" v-model="phoneNum" onkeypress="return event.keyCode>=48&&event.keyCode<=57" ng-pattern="/[^a-zA-Z]/" />
 		</div>
 		<button disabled="disabled" v-if="btseen" class="btn disabled">
 			下一步
@@ -34,8 +34,15 @@
     	data () {
       		return {
       			phoneNum:"",
-      			btseen:true
+      			btseen:true,
+      			login:""
       		}
+    	},
+    	created(){
+//  		var path=this.$route.query;
+//  		if(path.login){
+//  			this.login=true
+//  		}
     	},
     	methods:{
     		handleClickNext(){

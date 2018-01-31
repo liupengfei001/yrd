@@ -16,13 +16,13 @@
 	</div>
 	<div class="custom" @click="handleclickRadio3" v-if="list3">
 		<p class="title">自定义还款</p>
-		<input type="number" class="number" v-model="value" />
+		<input type="number" class="number" v-model="value" onkeypress="return event.keyCode>=48&&event.keyCode<=57" ng-pattern="/[^a-zA-Z]/"/>
 		<p class="border"></p>
 		<p class="bottom">本期已出账单与未出账单最高还款金额</p>
 		<img class="radio" v-if="three" src="/static/images/radio.png"/>
 		<img class="radio" v-if="!three" src="/static/images/check.png"/>
 	</div>
-		<button class="btn" :class="{margin:margin,haha:haha}" @click="handleClickPay">
+		<button class="btn" :class="{margin:margin,margin2:top}" @click="handleClickPay">
 			确认还款
 		</button>
 		<button v-if="btnseen" class="btnBorder" @click="handleClickBranch">
@@ -37,7 +37,7 @@
 <script>
 	import Qs from 'qs'
 	export default {
-    	name: "Index",
+    	name: "Repay",
     	data () {
       		return {
       			one:false,
@@ -49,7 +49,7 @@
       			list3:true,
       			btnseen:false,
       			margin:false,
-      			haha:false,
+      			top:false,
       			stmtMinBal:'',
       			stmtBal:''
       		}
@@ -68,10 +68,13 @@
     			this.margin=true
     		}
     		var data={
-    			vCardNo:localStorage.vCardNo
+    			vCardNo:localStorage.vCardNo,
+    			wechat_id:localStorage.wechat_id
     		}
-    		this.$http.post(this.$store.state.link+'/repay/acct', Qs.stringify(data)
-			).then(response => {
+    		var headers=Header(data,localStorage.open_id)
+    		this.$http.post(this.$store.state.link+'/repay/acct', Qs.stringify(data),{
+				headers:headers
+    		}).then(response => {
 				var res=response.data.data;
 				console.log(response.data)
 				this.stmtBal=res.stmtBal
@@ -80,8 +83,11 @@
 				if(this.stmtMinBal==0){
 		      		this.list1=false;
 		      		this.two=false
-		      		this.haha=true
+		      		this.top=true
 		      	}
+				if(this.stmtBal<500){
+					this.btnseen=false
+				}
 	        },response => {
 	        	console.log("ajax error");
 	      	});
@@ -208,7 +214,7 @@
 	.margin{
 		margin-top:6.28rem;
 	}
-	.haha{
+	.margin2{
 		margin-top:3.35rem;
 	}
 	.btnBorder{

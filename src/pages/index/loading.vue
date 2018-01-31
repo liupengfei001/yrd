@@ -30,13 +30,15 @@
     			//this.$router.push("/information")
     		},
     		search(){
-    			
+    			var params={
+	    			wechat_id:localStorage.wechat_id,
+					open_id:this.open_id
+	    		}
+	    		var headers=Header(params,localStorage.open_id)
     			this.$http.get(this.$store.state.link+'/poll/get/webanknum',{
-		      		params:{
-						wechat_id:localStorage.wechat_id,
-						open_id:this.open_id
-					}
-		     	}).then(response => {
+		      		params:params,
+		      		headers:headers
+		     }).then(response => {
 		      		var ret=response.data.retCode;
 		      		if(ret==0){
 		      			Indicator.close();
